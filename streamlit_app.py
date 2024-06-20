@@ -16,9 +16,9 @@ st.subheader('E-commerce Performance Analysis')
 
 
 # Load datasets
-flipkart_df = pd.read_excel('/data/1.eTailing_Flipkart.xlsx')
-amazon_df = pd.read_excel('/data/2. eTailing_Amazon.xlsx')
-meesho_df = pd.read_excel('/data/3.SocialCommerce_Meesho.xlsx')
+flipkart_df = pd.read_excel('data/1.eTailing_Flipkart.xlsx')
+amazon_df = pd.read_excel('data/2. eTailing_Amazon.xlsx')
+meesho_df = pd.read_excel('data/3.SocialCommerce_Meesho.xlsx')
 
 flipkart_df['Source'] = 'Flipkart'
 amazon_df['Source'] = 'Amazon'
