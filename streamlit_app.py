@@ -1,5 +1,4 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
 import altair as alt
 
@@ -14,11 +13,9 @@ with st.expander('About this app'):
 
 st.subheader('E-commerce Performance Analysis')
 
-
 # Load datasets
 flipkart_df = pd.read_excel('data/1.eTailing_Flipkart.xlsx')
 amazon_df = pd.read_excel('data/2. eTailing_Amazon.xlsx')
-meesho_df = pd.read_excel('data/3.SocialCommerce_Meesho.xlsx')
 
 flipkart_df['Source'] = 'Flipkart'
 amazon_df['Source'] = 'Amazon'
@@ -26,10 +23,11 @@ amazon_df['Source'] = 'Amazon'
 # Concatenate the datasets
 combined_df = pd.concat([flipkart_df, amazon_df], ignore_index=True)
 
-
-
 # Ensure 'Month' column is datetime
 combined_df['Month'] = pd.to_datetime(combined_df['Month'], format='%b\'%y')
+
+# Convert 'Month' column to datetime.date for Streamlit compatibility
+combined_df['Month'] = combined_df['Month'].dt.date
 
 # Input widgets
 ## Source selection
