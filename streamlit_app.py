@@ -1,23 +1,31 @@
+import sqlite3
 import streamlit as st
 import pandas as pd
-import altair as alt
 
+def create_database():
+    conn = sqlite3.connect('customers.db')
+    c = conn.cursor()
+    c.execute("""
+    SELECT name FROM sqlite_master WHERE type='table' AND name='customers'
+    """)
+    if not c.fetchone():
+        c.execute('''CREATE TABLE customers
+                     (name text, address text, phone text)''')
+        conn.commit()
+    conn.close()
 
-# Create the SQL connection to pets_db as specified in your secrets file.
-conn = st.connection('db', type='sql')
+def import_csv_to_database(csv_file):
+    df = pd.read_csv(csv_file)
+    conn = sqlite3.connect('customers.db')
+    df.to_sql('customers', conn, if_exists='append', index=False)
+    conn.close()
 
-# Insert some data with conn.session.
-with conn.session as s:
-    s.execute('CREATE TABLE IF NOT EXISTS pet_owners (person TEXT, pet TEXT);')
-    s.execute('DELETE FROM pet_owners;')
-    pet_owners = {'jerry': 'fish', 'barbara': 'cat', 'alex': 'puppy'}
-    for k in pet_owners:
-        s.execute(
-            'INSERT INTO pet_owners (person, pet) VALUES (:owner, :pet);',
-            params=dict(owner=k, pet=pet_owners[k])
-        )
-    s.commit()
+# Streamlit UI
+st.title("CSV to SQLite Importer")
 
-# Query and display the data you inserted
-pet_owners = conn.query('select * from pet_owners')
-st.dataframe(pet_owners)
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+
+if uploaded_file is not None:
+    create_database()
+    import_csv_to_database(uploaded_file)
+    st.success("CSV data imported successfully!")
