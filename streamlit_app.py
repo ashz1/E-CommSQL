@@ -1,6 +1,7 @@
 import sqlite3
 import streamlit as st
-
+import pandas as pd
+fdf = pd.read_csv('data/1.csv')
 def create_database():
     
     conn = sqlite3.connect('customers.db')
