@@ -2,11 +2,17 @@ import sqlite3
 import streamlit as st
 import pandas as pd
 fdf = pd.read_csv('data/1.csv')
+adf = pd.read_csv('data/2.csv')
 conn = sqlite3.connect('ecom.db')
 
 fdf.to_sql('flipkart', conn, if_exists="append")
+adf.to_sql('amazon', conn, if_exists="append")
+
 st.write("Existing Data:")
+st.write("SELECT * FROM flipkart")
 st.write(pd.read_sql('SELECT * FROM flipkart', conn))
+st.write("SELECT * FROM amazon")
+st.write(pd.read_sql('SELECT * FROM amazon', conn))
 
 def add_customer(name, address, phone):
     conn = sqlite3.connect('customers.db')
