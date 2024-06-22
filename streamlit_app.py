@@ -9,8 +9,8 @@ conn = sqlite3.connect('ecom.db')
 
 # Function to create database and insert data from CSV
 def create_database():
-    fdf.to_sql('flipkart', conn, if_exists="replace", index=False)
-    adf.to_sql('amazon', conn, if_exists="replace", index=False)
+    fdf.to_sql('flipkart', conn, if_exists="fail", index=False)
+    adf.to_sql('amazon', conn, if_exists="fail", index=False)
     conn.commit()
 
 # Function to search data in the database
@@ -30,17 +30,42 @@ def main():
     # Create database and insert data from CSV if not already created
     create_database()
 
-    # Display existing data
-    st.write("Existing Data:")
-    st.write("Flipkart Table:")
-    st.write(view_data('flipkart'))
-    st.write("Amazon Table:")
-    st.write(view_data('amazon'))
+
 
     # Search operations
     st.sidebar.header("Search Operations")
     table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon"])
-    column = st.sidebar.selectbox("Choose a column", ["name", "price"])  # Adjust according to your table schema
+    column = st.sidebar.selectbox("Choose a column", [
+    "Month",
+    "Gross Transactions (Mn)",
+    "Shipped Transactions (Mn)",
+    "Checkout GMV (USD Mn)",
+    "Shipped GMV (USD Mn)",
+    "Fulfilled GMV i.e. GMV post Return (USD Mn)",
+    "Average Order Value per transaction  (USD)",
+    "ASP per item (USD)",
+    "Mobiles (USD Mn)",
+    "Electronic Devices (USD Mn)",
+    "Large & Small Appliances (USD Mn)",
+    "% COD",
+    "% Prepaid",
+    "Orders shipped per day Lacs",
+    "% Returns(RTO+RVP)",
+    "% share of Captive",
+    "% share of 3PL",
+    "% Metro",
+    "% Tier-I",
+    "% Others",
+    "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)",
+    "Other Revenue (USD Mn)",
+    "Total Revenue (USD Mn)",
+    "Supply Chain Costs (Fixed and Variable Included) (USD Mn)",
+    "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)",
+    "Marketing Expediture (USD Mn)",
+    "Contribution Margin (as % of Fulfilled GMV)",
+    "Tech & Admin/Employee Costs and other costs (USD Mn)",
+    "Cash Burn (USD Mn)"
+])  
     value = st.sidebar.text_input("Search value")
 
     if st.sidebar.button("Search"):
