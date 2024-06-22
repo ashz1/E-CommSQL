@@ -14,10 +14,14 @@ def create_database():
     conn.close()
 
 def import_csv_to_database(csv_file):
-    df = pd.read_csv(csv_file)
-    conn = sqlite3.connect('customers.db')
-    df.to_sql('customers', conn, if_exists='append', index=False)
-    conn.close()
+    try:
+        df = pd.read_csv(csv_file)
+        conn = sqlite3.connect('customers.db')
+        df.to_sql('customers', conn, if_exists='append', index=False)
+        conn.close()
+        st.success("CSV data imported successfully!")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 # Streamlit UI
 st.title("CSV to SQLite Importer")
