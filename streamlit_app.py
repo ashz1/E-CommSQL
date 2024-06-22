@@ -23,6 +23,22 @@ def view_data(table):
     query = f"SELECT * FROM {table}"
     return pd.read_sql(query, conn)
 
+# Function to update data in the database
+def update_data(table, column, old_value, new_value):
+    query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
+    cur = conn.cursor()
+    cur.execute(query, (new_value, old_value))
+    conn.commit()
+    cur.close()
+
+# Function to delete data from the database
+def delete_data(table, column, value):
+    query = f"DELETE FROM {table} WHERE {column} = ?"
+    cur = conn.cursor()
+    cur.execute(query, (value,))
+    conn.commit()
+    cur.close()
+
 # Main Streamlit app
 def main():
     st.title("E-commerce Database App")
@@ -49,6 +65,45 @@ def main():
         result = search_data(table, column, value)
         st.header(f"Search Results in {table} for '{value}' in column '{column}':")
         st.write(result)
+
+    # Update operations
+    st.sidebar.header("Update Operations")
+    table_to_update = st.sidebar.selectbox("Choose a table to update", ["flipkart", "amazon"], key="update_table")
+    column_to_update = st.sidebar.selectbox("Choose a column to update", [
+        "Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="update_column")
+    old_value = st.sidebar.text_input("Old value")
+    new_value = st.sidebar.text_input("New value")
+
+    if st.sidebar.button("Click here to update"):
+        update_data(table_to_update, column_to_update, old_value, new_value)
+        st.sidebar.text("Data updated successfully")
+
+    # Delete operations
+    st.sidebar.header("Delete Operations")
+    table_to_delete = st.sidebar.selectbox("Choose a table to delete from", ["flipkart", "amazon"], key="delete_table")
+    column_to_delete = st.sidebar.selectbox("Choose a column to delete from", [
+        "Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="delete_column")
+    value_to_delete = st.sidebar.text_input("Value to delete")
+
+    if st.sidebar.button("Click here to delete"):
+        delete_data(table_to_delete, column_to_delete, value_to_delete)
+        st.sidebar.text("Data deleted successfully")
 
     
 
