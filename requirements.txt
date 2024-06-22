@@ -1,3 +1,4 @@
 streamlit>=1.26.0
 openpyxl
-SQLAlchemy mysqlclient
+SQLAlchemy 
+mysqlclient
