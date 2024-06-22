@@ -85,6 +85,8 @@ def main():
     if st.sidebar.button("Click here to update"):
         update_data(table_to_update, column_to_update, old_value, new_value)
         st.sidebar.text("Data updated successfully")
+        result = view_data(table_to_update)
+        st.write(result)
 
     # Delete operations
     st.sidebar.header("Delete Operations")
@@ -104,7 +106,8 @@ def main():
     if st.sidebar.button("Click here to delete"):
         delete_data(table_to_delete, column_to_delete, value_to_delete)
         st.sidebar.text("Data deleted successfully")
-
+        result = view_data(table_to_delete)
+        st.write(result)
     
 
     # Close the database connection
