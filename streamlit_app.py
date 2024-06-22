@@ -37,21 +37,22 @@ def main():
     table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon"])
     column = st.sidebar.selectbox("Choose a column", ["Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"])  # Adjust according to your table schema
     value = st.sidebar.text_input("Search value")
-
-    if st.sidebar.button("Search"):
-        result = search_data(table, column, value)
-        st.header(f"Search Results in {table} for '{value}' in column '{column}':")
-        st.write(result)
-
+    
     # View operations
     st.sidebar.header("View Operations")
     table_to_view = st.sidebar.selectbox("Choose a table to view", ["flipkart", "amazon"], key="view_table")
 
-    if st.sidebar.button("View"):
+    if st.sidebar.button("Click here to view"):
         result = view_data(table_to_view)
         st.header(f"Data in {table_to_view} Table:")
         st.write(result)
+        
+    if st.sidebar.button("Click here to search"):
+        result = search_data(table, column, value)
+        st.header(f"Search Results in {table} for '{value}' in column '{column}':")
+        st.write(result)
 
+    
     # Close the database connection
     conn.close()
 
