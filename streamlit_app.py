@@ -47,7 +47,7 @@ def main():
     create_database()
 
     # View operations
-    st.sidebar.header("View Operations")
+    st.sidebar.header("View Operations: 'SELECT * FROM {table}'")
     table_to_view = st.sidebar.selectbox("Choose a table to view", ["flipkart", "amazon"], key="view_table")
 
     if st.sidebar.button("Click here to view"):
@@ -56,7 +56,7 @@ def main():
         st.write(result)
 
     # Search operations
-    st.sidebar.header("Search Operations")
+    st.sidebar.header("Search Operations: 'SELECT * FROM {table} WHERE {column} LIKE ?'")
     table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon"])
     column = st.sidebar.selectbox("Choose a column", ["Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"])  # Adjust according to your table schema
     value = st.sidebar.text_input("Search value")
@@ -67,7 +67,7 @@ def main():
         st.write(result)
 
     # Update operations
-    st.sidebar.header("Update Operations")
+    st.sidebar.header("Update Operations: 'UPDATE {table} SET {column} = ? WHERE {column} = ?'")
     table_to_update = st.sidebar.selectbox("Choose a table to update", ["flipkart", "amazon"], key="update_table")
     column_to_update = st.sidebar.selectbox("Choose a column to update", [
         "Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
@@ -89,7 +89,7 @@ def main():
         st.write(result)
 
     # Delete operations
-    st.sidebar.header("Delete Operations")
+    st.sidebar.header("Delete Operations: 'DELETE FROM {table} WHERE {column} = ?'")
     table_to_delete = st.sidebar.selectbox("Choose a table to delete from", ["flipkart", "amazon"], key="delete_table")
     column_to_delete = st.sidebar.selectbox("Choose a column to delete from", [
         "Month", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
