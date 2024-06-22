@@ -5,10 +5,9 @@ import pandas as pd
 def create_database():
     conn = sqlite3.connect('customers.db')
     c = conn.cursor()
-    c.execute("""
-    SELECT name FROM sqlite_master WHERE type='table' AND name='customers'
-    """)
-    if not c.fetchone():
+    # Check if 'customers' table exists in the database
+    c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='customers'")
+    if c.fetchone()[0] == 0:
         c.execute('''CREATE TABLE customers
                      (name text, address text, phone text)''')
         conn.commit()
