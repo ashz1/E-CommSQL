@@ -9,8 +9,8 @@ conn = sqlite3.connect('ecom.db')
 
 # Function to create database and insert data from CSV
 def create_database():
-    fdf.to_sql('flipkart', conn, if_exists="fail", index=False)
-    adf.to_sql('amazon', conn, if_exists="fail", index=False)
+    fdf.to_sql('flipkart', conn, if_exists="replace", index=False)
+    adf.to_sql('amazon', conn, if_exists="replace", index=False)
     conn.commit()
 
 # Function to search data in the database
