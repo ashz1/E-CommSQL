@@ -38,10 +38,23 @@ def delete_data(table, column, value):
     cur.execute(query, (value,))
     conn.commit()
     cur.close()
+# Function to perform aggregation queries
+def aggregate_data(table, operation, column):
+    query = f"SELECT {operation}({column}) as result FROM {table}"
+    return pd.read_sql(query, conn)
+
+# Function to perform join queries
+def join_data():
+    query = """
+    SELECT f.*, a.*
+    FROM flipkart f
+    JOIN amazon a ON f.Month = a.Month
+    """
+    return pd.read_sql(query, conn)
 
 # Main Streamlit app
 def main():
-    st.title("E-commerce Database App")
+    st.title("SQL Database Operations Demo by Aashay")
 
     # Create database and insert data from CSV if not already created
     create_database()
@@ -109,7 +122,32 @@ def main():
         result = view_data(table_to_delete)
         st.write(result)
     
+    # Aggregation operations
+    st.sidebar.header("Aggregation Operations: 'SELECT {operation}({column}) FROM {table}'")
+    agg_operation = st.sidebar.selectbox("Choose an aggregation operation", ["SUM", "AVG", "MAX", "MIN", "COUNT"], key="agg_operation")
+    agg_table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon"], key="agg_table")
+    agg_column = st.sidebar.selectbox("Choose a column to aggregate", [
+        "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="agg_column")
 
+    if st.sidebar.button("Click here to aggregate"):
+        result = aggregate_data(agg_table, agg_operation, agg_column)
+        st.header(f"Aggregation Result in {agg_table} for '{agg_operation}({agg_column})':")
+        st.write(result)
+
+    # Join operations
+    st.sidebar.header("Join Operations: 'SELECT * FROM flipkart JOIN amazon ON flipkart.Month = amazon.Month'")
+    if st.sidebar.button("Click here to join"):
+        result = join_data()
+        st.header(f"Join Result between Flipkart and Amazon Tables:")
+        st.write(result)
     # Close the database connection
     conn.close()
 
