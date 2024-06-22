@@ -2,18 +2,11 @@ import sqlite3
 import streamlit as st
 import pandas as pd
 fdf = pd.read_csv('data/1.csv')
-def create_database():
-    
-    conn = sqlite3.connect('customers.db')
-    c = conn.cursor()
-    c.execute("""
-    SELECT name FROM sqlite_master WHERE type='table' AND name='customers'
-    """)
-    if not c.fetchone():
-        c.execute('''CREATE TABLE customers
-                     (name text, address text, phone text)''')
-        conn.commit()
-    conn.close()
+conn = sqlite3.connect('ecom.db')
+
+fdf.to_sql('flipkart', conn, if_exists="append")
+st.write("Existing Data:")
+st.write(pd.read_sql('SELECT * FROM flipkart', conn))
 
 def add_customer(name, address, phone):
     conn = sqlite3.connect('customers.db')
