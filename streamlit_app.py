@@ -4,7 +4,13 @@ import pandas as pd
 fdf = pd.read_csv('data/1.csv')
 adf = pd.read_csv('data/2.csv')
 conn = sqlite3.connect('ecom.db')
+st.title("SQL Database Operations Demo by Aashay")
+st.write("""Introduction:
+I've created a simple CRUD SQL demo app using SQLite3 to demonstrate SQL queries. This app is based on my experience as a business and data analyst in India, although I've altered the actual data slightly for demonstration purposes.
 
+App Overview:
+The app, built using Python's Streamlit library, allows users to perform basic CRUD (Create, Read, Update, Delete) operations on two datasets: one from Flipkart and one from Amazon. It provides an interactive interface for viewing, searching, updating, and deleting data, as well as aggregating data and performing join queries.
+""")
 
 
 # Function to create database and insert data from CSV
@@ -43,7 +49,7 @@ def delete_data(table, column, value):
 
 # Main Streamlit app
 def main():
-    st.title("SQL Database Operations Demo by Aashay")
+    
 
     # Create database and insert data from CSV if not already created
     create_database()
