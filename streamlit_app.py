@@ -38,23 +38,8 @@ def delete_data(table, column, value):
     cur.execute(query, (value,))
     conn.commit()
     cur.close()
-def aggregate_data(table, operation, column):
-    try:
-        query = f"SELECT {operation}({column}) as result FROM {table}"
-        print(f"Executing query: {query}")
-        return pd.read_sql(query, conn)
-    except Exception as e:
-        st.error(f"Error executing query: {query}\nException: {e}")
-        return None
 
-# Function to perform join queries
-def join_data():
-    query = """
-    SELECT f.*, a.*
-    FROM flipkart f
-    JOIN amazon a ON f.Month = a.Month
-    """
-    return pd.read_sql(query, conn)
+
 
 # Main Streamlit app
 def main():
@@ -126,24 +111,6 @@ def main():
         result = view_data(table_to_delete)
         st.write(result)
     
-    # Aggregation operations
-    st.sidebar.header("Aggregation Operations: 'SELECT {operation}({column}) FROM {table}'")
-    agg_operation = st.sidebar.selectbox("Choose an aggregation operation", ["SUM", "AVG", "MAX", "MIN", "COUNT"], key="agg_operation")
-    agg_table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon"], key="agg_table")
-    agg_column = st.sidebar.selectbox("Choose a column to aggregate", fdf.columns.tolist() if agg_table == "flipkart" else adf.columns.tolist(), key="agg_column")
-
-    if st.sidebar.button("Click here to aggregate"):
-        result = aggregate_data(agg_table, agg_operation, agg_column)
-        if result is not None:
-            st.header(f"Aggregation Result in {agg_table} for '{agg_operation}({agg_column})':")
-            st.write(result)
-
-    # Join operations
-    st.sidebar.header("Join Operations: 'SELECT * FROM flipkart JOIN amazon ON flipkart.Month = amazon.Month'")
-    if st.sidebar.button("Click here to join"):
-        result = join_data()
-        st.header(f"Join Result between Flipkart and Amazon Tables:")
-        st.write(result)
     conn.close()
 
 if __name__ == '__main__':
