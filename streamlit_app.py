@@ -16,6 +16,11 @@ The code can be viewed on github, under the MIT license, feel free to use it for
 # Add a new column to identify the source
 fdf['Source'] = 'Flipkart'
 adf['Source'] = 'Amazon'
+# Reorder columns to place 'Source' after 'Month'
+cols = fdf.columns.tolist()
+cols.insert(cols.index('Month') + 1, cols.pop(cols.index('Source')))
+fdf = fdf[cols]
+adf = adf[cols]
 # Function to create database and insert data from CSV
 def create_database():
     fdf.to_sql('flipkart', conn, if_exists="replace", index=False)
