@@ -13,7 +13,9 @@ The app, built using Python's Streamlit library, allows users to perform basic C
 The code can be viewed on github, under the MIT license, feel free to use it for your own projects and please do not hesitate to drop me an email if you find any errors or have feedback, I'll appreciate it.
 """)
 
-
+# Add a new column to identify the source
+fdf['Source'] = 'Flipkart'
+adf['Source'] = 'Amazon'
 # Function to create database and insert data from CSV
 def create_database():
     fdf.to_sql('flipkart', conn, if_exists="replace", index=False)
