@@ -50,7 +50,13 @@ def view_data(table):
     else:
         query = f"SELECT * FROM {table}"
         return pd.read_sql(query, conn)
-
+# Function to update data in the database
+def update_data(table, column, old_value, new_value):
+    query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
+    cur = conn.cursor()
+    cur.execute(query, (new_value, old_value))
+    conn.commit()
+    cur.close()
 # Function to delete data from the database
 def delete_data(table, column, value):
     query = f"DELETE FROM {table} WHERE {column} = ?"
