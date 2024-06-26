@@ -130,7 +130,7 @@ def main():
 
     if st.sidebar.button("Aggregate"):
         result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
-        st.header(f"Aggregation Results for {table_to_aggregate}:")
+        st.header(f"Aggregation Results for {table_to_aggregate} from January 21 to March 22:")
         st.write(result)
     conn.close()
 
