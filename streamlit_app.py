@@ -100,10 +100,20 @@ def main():
         st.header(f"Search Results in {table} for '{value}' in column '{column}':")
         st.write(result)
 
+
     # Update operations
     st.sidebar.header("Update Operations: 'UPDATE {table} SET {column} = ? WHERE {column} = ?'")
     table_to_update = st.sidebar.selectbox("Choose a table to update", ["flipkart", "amazon"], key="update_table")
-    column_to_update = st.sidebar.selectbox("Choose a column to update", fdf.columns.tolist(), key="update_column")
+    column_to_update = st.sidebar.selectbox("Choose a column to update", [
+        "Month", "Source", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="update_column")
     old_value = st.sidebar.text_input("Old value")
     new_value = st.sidebar.text_input("New value")
 
@@ -116,7 +126,16 @@ def main():
     # Delete operations
     st.sidebar.header("Delete Operations: 'DELETE FROM {table} WHERE {column} = ?'")
     table_to_delete = st.sidebar.selectbox("Choose a table to delete from", ["flipkart", "amazon"], key="delete_table")
-    column_to_delete = st.sidebar.selectbox("Choose a column to delete from", fdf.columns.tolist(), key="delete_column")
+    column_to_delete = st.sidebar.selectbox("Choose a column to delete from", [
+        "Month", "Source", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="delete_column")
     value_to_delete = st.sidebar.text_input("Value to delete")
 
     if st.sidebar.button("Click here to delete"):
@@ -124,11 +143,10 @@ def main():
         st.sidebar.text("Data deleted successfully")
         result = view_data(table_to_delete)
         st.write(result)
-
     # Aggregation operations
     st.sidebar.header("Aggregation Operations")
-    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
-    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns.tolist())
+    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon"], key="aggregate_table")
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
     aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
 
     if st.sidebar.button("Aggregate"):
