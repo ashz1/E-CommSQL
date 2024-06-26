@@ -72,7 +72,13 @@ def aggregate_data(table, columns, method):
     else:
         query = f'SELECT {agg_query} FROM {table}'
         return pd.read_sql(query, conn)
-    
+# Function to update data in the database
+def update_data(table, column, old_value, new_value):
+    query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
+    cur = conn.cursor()
+    cur.execute(query, (new_value, old_value))
+    conn.commit()
+    cur.close()
 # Main Streamlit app
 def main():
     
