@@ -64,8 +64,8 @@ def aggregate_data(table, columns, method):
     cols = ", ".join([f'"{col}"' for col in columns])
     agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
     if table == 'both':
-        query_flipkart = f'SELECT {agg_query} FROM flipkart'
-        query_amazon = f'SELECT {agg_query} FROM amazon'
+        query_flipkart = f'SELECT {agg_query}, "Flipkart" as Source FROM flipkart'
+        query_amazon = f'SELECT {agg_query}, "Amazon" as Source FROM amazon'
         result_flipkart = pd.read_sql(query_flipkart, conn)
         result_amazon = pd.read_sql(query_amazon, conn)
         return pd.concat([result_flipkart, result_amazon])
