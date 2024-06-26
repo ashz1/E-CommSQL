@@ -48,8 +48,9 @@ def delete_data(table, column, value):
 
 # Function to aggregate data in the database
 def aggregate_data(table, columns, method):
-    agg_query = ", ".join([f"{method}({col}) AS {method}_{col}" for col in columns])
-    query = f"SELECT {agg_query} FROM {table}"
+    cols = ", ".join([f'"{col}"' for col in columns])
+    agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
+    query = f'SELECT {agg_query} FROM {table}'
     return pd.read_sql(query, conn)
     
 # Main Streamlit app
