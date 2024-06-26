@@ -59,19 +59,11 @@ def delete_data(table, column, value):
     conn.commit()
     cur.close()
 
-# Function to aggregate data in the database
 def aggregate_data(table, columns, method):
     cols = ", ".join([f'"{col}"' for col in columns])
     agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
-    if table == 'both':
-        query_flipkart = f'SELECT {agg_query}, "Flipkart" as Source FROM flipkart'
-        query_amazon = f'SELECT {agg_query}, "Amazon" as Source FROM amazon'
-        result_flipkart = pd.read_sql(query_flipkart, conn)
-        result_amazon = pd.read_sql(query_amazon, conn)
-        return pd.concat([result_flipkart, result_amazon])
-    else:
-        query = f'SELECT {agg_query} FROM {table}'
-        return pd.read_sql(query, conn)
+    query = f'SELECT {agg_query} FROM {table}'
+    return pd.read_sql(query, conn)
 # Function to update data in the database
 def update_data(table, column, old_value, new_value):
     query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
@@ -151,15 +143,15 @@ def main():
         st.write(result)
     # Aggregation operations
     st.sidebar.header("Aggregation Operations")
-    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
-    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns.tolist())
+    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon"], key="aggregate_table")
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
     aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
 
     if st.sidebar.button("Aggregate"):
         result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
+        st.header(f"Aggregation Results for {table_to_aggregate}:")
         st.header(f"Aggregation Results for {table_to_aggregate} from January 21 to March 22:")
         st.write(result)
-    conn.close()
     
 if __name__ == '__main__':
     main()
