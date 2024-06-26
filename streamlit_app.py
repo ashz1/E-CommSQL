@@ -46,7 +46,11 @@ def delete_data(table, column, value):
     conn.commit()
     cur.close()
 
-
+# Function to aggregate data in the database
+def aggregate_data(table, columns, method):
+    cols = ", ".join(columns)
+    query = f"SELECT {method}({cols}) FROM {table}"
+    return pd.read_sql(query, conn)
 
 # Main Streamlit app
 def main():
@@ -117,7 +121,16 @@ def main():
         st.sidebar.text("Data deleted successfully")
         result = view_data(table_to_delete)
         st.write(result)
-    
+    # Aggregation operations
+    st.sidebar.header("Aggregation Operations")
+    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon"], key="aggregate_table")
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
+    aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
+
+    if st.sidebar.button("Aggregate"):
+        result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
+        st.header(f"Aggregation Results for {table_to_aggregate}:")
+        st.write(result)
     conn.close()
 
 if __name__ == '__main__':
