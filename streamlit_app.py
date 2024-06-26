@@ -151,8 +151,8 @@ def main():
         st.write(result)
     # Aggregation operations
     st.sidebar.header("Aggregation Operations")
-    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon"], key="aggregate_table")
-    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
+    table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns.tolist())
     aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
 
     if st.sidebar.button("Aggregate"):
