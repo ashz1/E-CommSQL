@@ -90,7 +90,7 @@ def main():
     # Search operations
     st.sidebar.header("Search Operations: 'SELECT * FROM {table} WHERE {column} LIKE ?'")
     table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon", "both"])
-    column = st.sidebar.selectbox("Choose a column", fdf.columns.tolist())
+    column = st.sidebar.selectbox("Choose a column", [col for col in fdf.columns if col not in ['Month', 'Source']])
     value = st.sidebar.text_input("Search value")
 
     if st.sidebar.button("Click here to search"):
