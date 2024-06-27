@@ -90,32 +90,38 @@ def join_data(join_type):
 
     if join_type == "RIGHT JOIN":
         join_query = f"""
-        SELECT *
+        SELECT amazon_prefixed.AMZN_Month as Month, flipkart_prefixed.*, amazon_prefixed.AMZN_Month, amazon_prefixed.*
         FROM amazon_prefixed
         LEFT JOIN flipkart_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         """
     elif join_type == "FULL OUTER JOIN":
         join_query = f"""
-        SELECT *
+        SELECT flipkart_prefixed.FLP_Month as Month, flipkart_prefixed.*, amazon_prefixed.AMZN_Month, amazon_prefixed.*
         FROM flipkart_prefixed
         LEFT JOIN amazon_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         UNION
-        SELECT *
+        SELECT amazon_prefixed.AMZN_Month as Month, flipkart_prefixed.*, amazon_prefixed.AMZN_Month, amazon_prefixed.*
         FROM amazon_prefixed
         LEFT JOIN flipkart_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         """
     else:
         join_query = f"""
-        SELECT *
+        SELECT flipkart_prefixed.FLP_Month as Month, flipkart_prefixed.*, amazon_prefixed.AMZN_Month, amazon_prefixed.*
         FROM flipkart_prefixed
         {join_type} amazon_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         """
     
-    return pd.read_sql(join_query, conn), join_query
+    result = pd.read_sql(join_query, conn)
+    
+    # Remove duplicate 'Month' columns and 'Source' columns
+    result = result.loc[:, ~result.columns.duplicated()]
+    result = result.drop(columns=['FLP_Source', 'AMZN_Source'], errors='ignore')
+    
+    return result, join_query
 
 # Main Streamlit app
 def main():
