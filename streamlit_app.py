@@ -91,13 +91,8 @@ def join_data(join_type):
     if join_type == "RIGHT JOIN":
         join_query = f"""
         SELECT *
-        FROM flipkart_prefixed
-        LEFT JOIN amazon_prefixed
-        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
-        UNION
-        SELECT *
-        FROM flipkart_prefixed
-        RIGHT JOIN amazon_prefixed
+        FROM amazon_prefixed
+        LEFT JOIN flipkart_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         """
     elif join_type == "FULL OUTER JOIN":
@@ -108,8 +103,8 @@ def join_data(join_type):
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         UNION
         SELECT *
-        FROM flipkart_prefixed
-        RIGHT JOIN amazon_prefixed
+        FROM amazon_prefixed
+        LEFT JOIN flipkart_prefixed
         ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
         """
     else:
@@ -214,8 +209,8 @@ def main():
     join_type_dict = {
         "INNER JOIN": "INNER JOIN",
         "LEFT JOIN": "LEFT JOIN",
-        "RIGHT JOIN": "LEFT JOIN",
-        "FULL OUTER JOIN": "LEFT JOIN"
+        "RIGHT JOIN": "RIGHT JOIN",
+        "FULL OUTER JOIN": "FULL OUTER JOIN"
     }
 
     if st.sidebar.button("Perform INNER JOIN"):
