@@ -81,15 +81,14 @@ def update_data(table, column, old_value, new_value):
     conn.commit()
     cur.close()
 
-# Function to perform a JOIN operation
-def join_data(join_type, column1, column2):
+def join_data(join_type):
     join_query = f"""
     SELECT *
     FROM flipkart
     {join_type} amazon
-    ON flipkart.{column1} = amazon.{column2}
+    ON flipkart.Month = amazon.Month
     """
-    return pd.read_sql(join_query, conn)
+    return pd.read_sql(join_query, conn), join_query
 
 # Main Streamlit app
 def main():
@@ -174,13 +173,45 @@ def main():
 
     # Join operations
     st.sidebar.header("Join Operations")
-    join_type = st.sidebar.selectbox("Choose a join type", ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN"], key="join_type")
-    column1 = st.sidebar.selectbox("Choose the join column from flipkart", fdf.columns.tolist(), key="join_column1")
-    column2 = st.sidebar.selectbox("Choose the join column from amazon", fdf.columns.tolist(), key="join_column2")
+    st.sidebar.write("Different types of JOIN operations:")
+    st.sidebar.write("1. INNER JOIN: Selects records that have matching values in both tables.")
+    st.sidebar.write("2. LEFT JOIN: Selects all records from the left table, and the matched records from the right table.")
+    st.sidebar.write("3. RIGHT JOIN: Selects all records from the right table, and the matched records from the left table.")
+    st.sidebar.write("4. FULL OUTER JOIN: Selects all records when there is a match in either left or right table.")
 
-    if st.sidebar.button("Click here to join"):
-        result = join_data(join_type, column1, column2)
-        st.header(f"Join Results using '{join_type}':")
+    join_type_dict = {
+        "INNER JOIN": "INNER JOIN",
+        "LEFT JOIN": "LEFT JOIN",
+        "RIGHT JOIN": "RIGHT JOIN",
+        "FULL OUTER JOIN": "FULL OUTER JOIN"
+    }
+
+    if st.sidebar.button("Perform INNER JOIN"):
+        result, query = join_data(join_type_dict["INNER JOIN"])
+        st.header("INNER JOIN Results:")
+        st.subheader("Query:")
+        st.code(query, language='sql')
+        st.write(result)
+
+    if st.sidebar.button("Perform LEFT JOIN"):
+        result, query = join_data(join_type_dict["LEFT JOIN"])
+        st.header("LEFT JOIN Results:")
+        st.subheader("Query:")
+        st.code(query, language='sql')
+        st.write(result)
+
+    if st.sidebar.button("Perform RIGHT JOIN"):
+        result, query = join_data(join_type_dict["RIGHT JOIN"])
+        st.header("RIGHT JOIN Results:")
+        st.subheader("Query:")
+        st.code(query, language='sql')
+        st.write(result)
+
+    if st.sidebar.button("Perform FULL OUTER JOIN"):
+        result, query = join_data(join_type_dict["FULL OUTER JOIN"])
+        st.header("FULL OUTER JOIN Results:")
+        st.subheader("Query:")
+        st.code(query, language='sql')
         st.write(result)
 
 
