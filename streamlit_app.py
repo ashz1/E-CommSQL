@@ -61,29 +61,16 @@ def delete_data(table, column, value):
 
 def aggregate_data(table, columns, method):
     cols = ", ".join([f'"{col}"' for col in columns])
-    if method in ["SUM", "AVG", "COUNT"]:
-        agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
-        if table == 'both':
-            query_flipkart = f'SELECT "Month", "Source", {agg_query}, MIN("Month") AS Min_Month, MAX("Month") AS Max_Month FROM flipkart'
-            query_amazon = f'SELECT "Month", "Source", {agg_query}, MIN("Month") AS Min_Month, MAX("Month") AS Max_Month FROM amazon'
-            result_flipkart = pd.read_sql(query_flipkart, conn)
-            result_amazon = pd.read_sql(query_amazon, conn)
-            return pd.concat([result_flipkart, result_amazon])
-        else:
-            query = f'SELECT "Month", "Source", {agg_query}, MIN("Month") AS Min_Month, MAX("Month") AS Max_Month FROM {table}'
-            return pd.read_sql(query, conn)
+    agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
+    if table == 'both':
+        query_flipkart = f'SELECT "Month", "Source", {agg_query} FROM flipkart'
+        query_amazon = f'SELECT "Month", "Source", {agg_query} FROM amazon'
+        result_flipkart = pd.read_sql(query_flipkart, conn)
+        result_amazon = pd.read_sql(query_amazon, conn)
+        return pd.concat([result_flipkart, result_amazon])
     else:
-        agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
-        if table == 'both':
-            query_flipkart = f'SELECT "Month", "Source", {agg_query}, "Month" AS Max_Min_Month FROM flipkart'
-            query_amazon = f'SELECT "Month", "Source", {agg_query}, "Month" AS Max_Min_Month FROM amazon'
-            result_flipkart = pd.read_sql(query_flipkart, conn)
-            result_amazon = pd.read_sql(query_amazon, conn)
-            return pd.concat([result_flipkart, result_amazon])
-        else:
-            query = f'SELECT "Month", "Source", {agg_query}, "Month" AS Max_Min_Month FROM {table}'
-            return pd.read_sql(query, conn)
-
+        query = f'SELECT "Month", "Source", {agg_query} FROM {table}'
+        return pd.read_sql(query, conn)
     
 # Function to update data in the database
 def update_data(table, column, old_value, new_value):
