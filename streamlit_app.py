@@ -12,8 +12,6 @@ App Overview:
 The app, built using Python's Streamlit library, allows users to perform basic CRUD (Create, Read, Update, Delete) operations on two datasets: one from Flipkart and one from Amazon. It provides an interactive interface for viewing, searching, updating, and deleting data, along with the SQL queries used. 
 The code can be viewed on github, under the MIT license, feel free to use it for your own projects and please do not hesitate to drop me an email if you find any errors or have feedback, I'll appreciate it.
 """)
-fdf.to_sql('flipkart', conn, if_exists="replace", index=False)
-adf.to_sql('amazon', conn, if_exists="replace", index=False)
 # Add a new column to identify the source
 fdf['Source'] = 'Flipkart'
 adf['Source'] = 'Amazon'
