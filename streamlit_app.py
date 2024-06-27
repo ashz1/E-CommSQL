@@ -89,13 +89,39 @@ def join_data(join_type):
     # Merge the datasets
     fdf_prefixed.to_sql('flipkart_prefixed', conn, if_exists="replace", index=False)
     adf_prefixed.to_sql('amazon_prefixed', conn, if_exists="replace", index=False)
+
+    if join_type == "RIGHT JOIN":
+        join_query = f"""
+        SELECT *
+        FROM flipkart_prefixed
+        LEFT JOIN amazon_prefixed
+        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
+        UNION
+        SELECT *
+        FROM flipkart_prefixed
+        RIGHT JOIN amazon_prefixed
+        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
+        """
+    elif join_type == "FULL OUTER JOIN":
+        join_query = f"""
+        SELECT *
+        FROM flipkart_prefixed
+        LEFT JOIN amazon_prefixed
+        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
+        UNION
+        SELECT *
+        FROM flipkart_prefixed
+        RIGHT JOIN amazon_prefixed
+        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
+        """
+    else:
+        join_query = f"""
+        SELECT *
+        FROM flipkart_prefixed
+        {join_type} amazon_prefixed
+        ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
+        """
     
-    join_query = f"""
-    SELECT *
-    FROM flipkart_prefixed
-    {join_type} amazon_prefixed
-    ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
-    """
     return pd.read_sql(join_query, conn), join_query
 
 # Main Streamlit app
@@ -184,14 +210,14 @@ def main():
     st.sidebar.write("Different types of JOIN operations:")
     st.sidebar.write("1. INNER JOIN: Selects records that have matching values in both tables.")
     st.sidebar.write("2. LEFT JOIN: Selects all records from the left table, and the matched records from the right table.")
-    st.sidebar.write("3. RIGHT JOIN: Selects all records from the right table, and the matched records from the left table.")
-    st.sidebar.write("4. FULL OUTER JOIN: Selects all records when there is a match in either left or right table.")
+    st.sidebar.write("3. RIGHT JOIN: Selects all records from the right table, and the matched records from the left table (simulated).")
+    st.sidebar.write("4. FULL OUTER JOIN: Selects all records when there is a match in either left or right table (simulated).")
 
     join_type_dict = {
         "INNER JOIN": "INNER JOIN",
         "LEFT JOIN": "LEFT JOIN",
-        "RIGHT JOIN": "RIGHT JOIN",
-        "FULL OUTER JOIN": "FULL OUTER JOIN"
+        "RIGHT JOIN": "LEFT JOIN",
+        "FULL OUTER JOIN": "LEFT JOIN"
     }
 
     if st.sidebar.button("Perform INNER JOIN"):
@@ -209,14 +235,14 @@ def main():
         st.write(result)
 
     if st.sidebar.button("Perform RIGHT JOIN"):
-        result, query = join_data(join_type_dict["RIGHT JOIN"])
+        result, query = join_data("RIGHT JOIN")
         st.header("RIGHT JOIN Results:")
         st.subheader("Query:")
         st.code(query, language='sql')
         st.write(result)
 
     if st.sidebar.button("Perform FULL OUTER JOIN"):
-        result, query = join_data(join_type_dict["FULL OUTER JOIN"])
+        result, query = join_data("FULL OUTER JOIN")
         st.header("FULL OUTER JOIN Results:")
         st.subheader("Query:")
         st.code(query, language='sql')
