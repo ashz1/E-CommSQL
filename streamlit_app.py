@@ -1,6 +1,7 @@
 import sqlite3
 import streamlit as st
 import pandas as pd
+container = st.container(border=True)
 fdf = pd.read_csv('data/1.csv')
 adf = pd.read_csv('data/2.csv')
 conn = sqlite3.connect('ecom.db')
@@ -141,20 +142,20 @@ def main():
         result = view_data(table_to_view)
         st.header(f"Data in {table_to_view} Table:")
  
-        st.write("""
+        container.write("""
             SQL CREATE VIEW Statement
              
                  In SQL, a view is a virtual table based on the result-set of an SQL statement.
                 A view contains rows and columns, just like a real table. The fields in a view are fields from one or more real tables in the database.
                 You can add SQL statements and functions to a view and present the data as if the data were coming from one single table. """)
-        st.write("""
+        container.write("""
             A view is created with the CREATE VIEW statement. 
                  CREATE VIEW Syntax
                 CREATE VIEW view_name AS
                 SELECT column1, column2, ...
                 FROM table_name
                 WHERE condition;""")
-        st.write(""" 
+        container.write(""" 
                  Note: A view always shows up-to-date data! The database engine recreates the view, every time a user queries it.""")
         st.write(result)
 
