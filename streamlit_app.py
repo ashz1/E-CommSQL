@@ -82,11 +82,19 @@ def update_data(table, column, old_value, new_value):
     cur.close()
 
 def join_data(join_type):
+    # Add prefixes to the columns of each table
+    fdf_prefixed = fdf.add_prefix('FLP_')
+    adf_prefixed = adf.add_prefix('AMZN_')
+
+    # Merge the datasets
+    fdf_prefixed.to_sql('flipkart_prefixed', conn, if_exists="replace", index=False)
+    adf_prefixed.to_sql('amazon_prefixed', conn, if_exists="replace", index=False)
+    
     join_query = f"""
     SELECT *
-    FROM flipkart
-    {join_type} amazon
-    ON flipkart.Month = amazon.Month
+    FROM flipkart_prefixed
+    {join_type} amazon_prefixed
+    ON flipkart_prefixed.FLP_Month = amazon_prefixed.AMZN_Month
     """
     return pd.read_sql(join_query, conn), join_query
 
