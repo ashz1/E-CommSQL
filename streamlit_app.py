@@ -62,8 +62,16 @@ def delete_data(table, column, value):
 def aggregate_data(table, columns, method):
     cols = ", ".join([f'"{col}"' for col in columns])
     agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
-    query = f'SELECT {agg_query} FROM {table}'
-    return pd.read_sql(query, conn)
+    if table == 'both':
+        query_flipkart = f'SELECT "Month", "Source", {agg_query} FROM flipkart'
+        query_amazon = f'SELECT "Month", "Source", {agg_query} FROM amazon'
+        result_flipkart = pd.read_sql(query_flipkart, conn)
+        result_amazon = pd.read_sql(query_amazon, conn)
+        return pd.concat([result_flipkart, result_amazon])
+    else:
+        query = f'SELECT "Month", "Source", {agg_query} FROM {table}'
+        return pd.read_sql(query, conn)
+    
 # Function to update data in the database
 def update_data(table, column, old_value, new_value):
     query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
@@ -142,19 +150,14 @@ def main():
         result = view_data(table_to_delete)
         st.write(result)
     # Aggregation operations
-    st.sidebar.header("Aggregation Operations")
+    st.sidebar.header("Aggregate Operations: 'SELECT {aggregation}({column}) FROM {table}'")
     table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
-    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
-    aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", [col for col in fdf.columns.tolist() if col not in ['Month', 'Source']])
+    aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT", "MAX", "MIN"])
 
-    if st.sidebar.button("Aggregate"):
-        if table_to_aggregate == 'both':
-            result_flipkart = aggregate_data('flipkart', columns_to_aggregate, aggregation_method)
-            result_amazon = aggregate_data('amazon', columns_to_aggregate, aggregation_method)
-            result = pd.concat([result_flipkart, result_amazon])
-        else:
-            result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
-        st.header(f"Aggregation Results for {table_to_aggregate}:")
+    if st.sidebar.button("Click here to aggregate"):
+        result = aggregate_data(table_to_aggregate, columns_to_aggregate, method)
+        st.header(f"Aggregation Results in {table_to_aggregate} using '{method}':")
         st.write(result)
 
     conn.close()
