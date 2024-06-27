@@ -79,6 +79,18 @@ def update_data(table, column, old_value, new_value):
     cur.execute(query, (new_value, old_value))
     conn.commit()
     cur.close()
+
+# Function to perform join operations
+def join_data(table1, table2, join_type, on_column):
+    join_query = f"""
+        SELECT {table1}.*, {table2}.*
+        FROM {table1}
+        {join_type} JOIN {table2}
+        ON {table1}.{on_column} = {table2}.{on_column}
+    """
+    result = pd.read_sql(join_query, conn)
+    return result
+
 # Main Streamlit app
 def main():
     
