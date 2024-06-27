@@ -155,16 +155,10 @@ def main():
     columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", [col for col in fdf.columns.tolist() if col not in ['Month', 'Source']])
     aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT", "MAX", "MIN"])
 
-    if st.sidebar.button("Aggregate"):
-        if table_to_aggregate == 'both':
-            result_flipkart = aggregate_data('flipkart', columns_to_aggregate, aggregation_method)
-            result_amazon = aggregate_data('amazon', columns_to_aggregate, aggregation_method)
-            result = pd.concat([result_flipkart, result_amazon])
-        else:
-            result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
-        st.header(f"Aggregation Results for {table_to_aggregate}:")
+    if st.sidebar.button("Click here to aggregate"):
+        result = aggregate_data(table_to_aggregate, columns_to_aggregate, method)
+        st.header(f"Aggregation Results in {table_to_aggregate} using '{method}':")
         st.write(result)
-
     conn.close()
     
 if __name__ == '__main__':
