@@ -80,6 +80,15 @@ def update_data(table, column, old_value, new_value):
     conn.commit()
     cur.close()
 
+# Function to perform a JOIN operation
+def join_data(join_type, table1, table2, column1, column2):
+    join_query = f"""
+    SELECT *
+    FROM {table1}
+    {join_type} JOIN {table2}
+    ON {table1}.{column1} = {table2}.{column2}
+    """
+    return pd.read_sql(join_query, conn)
 
 # Main Streamlit app
 def main():
@@ -162,6 +171,20 @@ def main():
         st.header(f"Aggregation Results in {table_to_aggregate} using '{method}':")
         st.write(result)
 
+    # Join operations
+    st.sidebar.header("Join Operations")
+    join_type = st.sidebar.selectbox("Choose a join type", ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN"], key="join_type")
+    table1 = st.sidebar.selectbox("Choose the first table", ["flipkart", "amazon"], key="join_table1")
+    table2 = st.sidebar.selectbox("Choose the second table", ["flipkart", "amazon"], key="join_table2")
+    column1 = st.sidebar.selectbox("Choose the join column from the first table", fdf.columns.tolist(), key="join_column1")
+    column2 = st.sidebar.selectbox("Choose the join column from the second table", fdf.columns.tolist(), key="join_column2")
+
+    if st.sidebar.button("Click here to join"):
+        result = join_data(join_type, table1, table2, column1, column2)
+        st.header(f"Join Results between {table1} and {table2} using '{join_type}':")
+        st.write(result)
+
+    
     conn.close()
     
 if __name__ == '__main__':
