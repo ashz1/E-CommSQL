@@ -150,13 +150,13 @@ def main():
 
                  You can add SQL statements and functions to a view and present the data as if the data were coming from one single table.
 
-             A view is created with the CREATE VIEW statement. 
+            A view is created with the CREATE VIEW statement. 
                      CREATE VIEW Syntax
                      CREATE VIEW view_name AS
                      SELECT column1, column2, ...
                      FROM table_name
                      WHERE condition;
-                     Note: A view always shows up-to-date data! The database engine recreates the view, every time a user queries it.""")
+            Note: A view always shows up-to-date data! The database engine recreates the view, every time a user queries it.""")
         st.write(result)
 
     # Search operations
@@ -169,19 +169,19 @@ def main():
         result = search_data(table, column, value)
         st.header(f"Search Results in {table} for '{value}' in column '{column}':")
         st.write("""
-             The SQL LIKE Operator
+            The SQL LIKE Operator
                      The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
                      There are two wildcards often used in conjunction with the LIKE operator: 
                      The percent sign % represents zero, one, or multiple characters. The underscore sign _ represents one, single character
-             Syntax
+            Syntax
                      SELECT column1, column2, ...
                      FROM table_name
                      WHERE columnN LIKE pattern;
-             Contains
+            Contains
                      To return records that contains a specific letter or phrase, add the % both before and after the letter or phrase.
-             Combine Wildcards
+            Combine Wildcards
                      Any wildcard, like % and _ , can be used in combination with other wildcards.       
-             Without Wildcard 
+            Without Wildcard 
                      If no wildcard is specified, the phrase has to have an exact match to return a result.
                  """)
         st.write(result)
