@@ -140,7 +140,8 @@ def main():
     if st.sidebar.button("Click here to view"):
         result = view_data(table_to_view)
         st.header(f"Data in {table_to_view} Table:")
-        st.write("""SQL CREATE VIEW Statement
+        st.write("""
+            SQL CREATE VIEW Statement
              In SQL, a view is a virtual table based on the result-set of an SQL statement.
 
              A view contains rows and columns, just like a real table. The fields in a view are fields from one or more real tables in the database.
