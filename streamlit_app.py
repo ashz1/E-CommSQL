@@ -171,6 +171,17 @@ def main():
         result = aggregate_data(table_to_aggregate, columns_to_aggregate, method)
         st.header(f"Aggregation Results in {table_to_aggregate} using '{method}':")
         st.write(result)
+
+    st.sidebar.header("Join Operations")
+    table1 = st.sidebar.selectbox("Choose first table", ["flipkart", "amazon"])
+    table2 = st.sidebar.selectbox("Choose second table", ["flipkart", "amazon"])
+    join_type = st.sidebar.selectbox("Choose join type", ["INNER", "LEFT", "RIGHT", "FULL OUTER"])
+    on_column = st.sidebar.selectbox("Choose column to join on", ["common_column"])
+
+    if st.sidebar.button("Click here to join"):
+        result = join_data(table1, table2, join_type, on_column)
+        st.header(f"Joined Data from {table1} and {table2}:")
+        st.write(result)
     conn.close()
     
 if __name__ == '__main__':
