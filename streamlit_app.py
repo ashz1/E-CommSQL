@@ -153,7 +153,7 @@ def main():
     st.sidebar.header("Aggregate Operations: 'SELECT {aggregation}({column}) FROM {table}'")
     table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
     columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", [col for col in fdf.columns.tolist() if col not in ['Month', 'Source']])
-    aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT", "MAX", "MIN"])
+    method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT", "MAX", "MIN"])
 
     if st.sidebar.button("Click here to aggregate"):
         result = aggregate_data(table_to_aggregate, columns_to_aggregate, method)
