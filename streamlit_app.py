@@ -27,7 +27,6 @@ def create_database():
     adf.to_sql('amazon', conn, if_exists="replace", index=False)
     conn.commit()
 
-# Function to search data in the database
 def search_data(table, column, value):
     if table == 'both':
         query_flipkart = f"SELECT * FROM flipkart WHERE {column} LIKE ?"
@@ -43,16 +42,28 @@ def search_data(table, column, value):
 # Function to view all data in a table
 def view_data(table):
     if table == 'both':
-        query_flipkart = "SELECT * FROM flipkart"
-        query_amazon = "SELECT * FROM amazon"
+        query_flipkart = f"SELECT * FROM flipkart"
+        query_amazon = f"SELECT * FROM amazon"
         result_flipkart = pd.read_sql(query_flipkart, conn)
         result_amazon = pd.read_sql(query_amazon, conn)
-        result = pd.concat([result_flipkart, result_amazon])
+        return pd.concat([result_flipkart, result_amazon])
     else:
         query = f"SELECT * FROM {table}"
-        result = pd.read_sql(query, conn)
-    return result[['Month', 'Source'] + [col for col in result.columns if col not in ['Month', 'Source']]]
+        return pd.read_sql(query, conn)
 
+# Function to delete data from the database
+def delete_data(table, column, value):
+    query = f"DELETE FROM {table} WHERE {column} = ?"
+    cur = conn.cursor()
+    cur.execute(query, (value,))
+    conn.commit()
+    cur.close()
+
+def aggregate_data(table, columns, method):
+    cols = ", ".join([f'"{col}"' for col in columns])
+    agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
+    query = f'SELECT {agg_query} FROM {table}'
+    return pd.read_sql(query, conn)
 # Function to update data in the database
 def update_data(table, column, old_value, new_value):
     query = f"UPDATE {table} SET {column} = ? WHERE {column} = ?"
@@ -60,44 +71,10 @@ def update_data(table, column, old_value, new_value):
     cur.execute(query, (new_value, old_value))
     conn.commit()
     cur.close()
-
-# Function to delete data from the database
-def delete_data(table, column, value):
-    if table == 'both':
-        query_flipkart = f"DELETE FROM flipkart WHERE {column} = ?"
-        query_amazon = f"DELETE FROM amazon WHERE {column} = ?"
-        cur = conn.cursor()
-        cur.execute(query_flipkart, (value,))
-        cur.execute(query_amazon, (value,))
-        conn.commit()
-        cur.close()
-    else:
-        query = f"DELETE FROM {table} WHERE {column} = ?"
-        cur = conn.cursor()
-        cur.execute(query, (value,))
-        conn.commit()
-        cur.close()
-
-# Function to aggregate data in the database
-def aggregate_data(table, columns, method):
-    cols = ", ".join([f'"{col}"' for col in columns])
-    agg_query = ", ".join([f'{method}("{col}") AS {method}_{col.replace(" ", "_").replace("(", "").replace(")", "")}' for col in columns])
-    if table == 'both':
-        query_flipkart = f'SELECT {agg_query} FROM flipkart'
-        query_amazon = f'SELECT {agg_query} FROM amazon'
-        result_flipkart = pd.read_sql(query_flipkart, conn)
-        result_amazon = pd.read_sql(query_amazon, conn)
-        result_flipkart['Source'] = 'Flipkart'
-        result_amazon['Source'] = 'Amazon'
-        result = pd.concat([result_flipkart, result_amazon])
-    else:
-        query = f'SELECT {agg_query} FROM {table}'
-        result = pd.read_sql(query, conn)
-        result['Source'] = table.capitalize()
-    return result
-
 # Main Streamlit app
 def main():
+    
+
     # Create database and insert data from CSV if not already created
     create_database()
 
@@ -113,7 +90,7 @@ def main():
     # Search operations
     st.sidebar.header("Search Operations: 'SELECT * FROM {table} WHERE {column} LIKE ?'")
     table = st.sidebar.selectbox("Choose a table", ["flipkart", "amazon", "both"])
-    column = st.sidebar.selectbox("Choose a column", [col for col in fdf.columns if col not in ['Month', 'Source']])
+    column = st.sidebar.selectbox("Choose a column", fdf.columns.tolist())
     value = st.sidebar.text_input("Search value")
 
     if st.sidebar.button("Click here to search"):
@@ -121,10 +98,20 @@ def main():
         st.header(f"Search Results in {table} for '{value}' in column '{column}':")
         st.write(result)
 
+
     # Update operations
     st.sidebar.header("Update Operations: 'UPDATE {table} SET {column} = ? WHERE {column} = ?'")
     table_to_update = st.sidebar.selectbox("Choose a table to update", ["flipkart", "amazon"], key="update_table")
-    column_to_update = st.sidebar.selectbox("Choose a column to update", [col for col in fdf.columns if col not in ['Month', 'Source']], key="update_column")
+    column_to_update = st.sidebar.selectbox("Choose a column to update", [
+        "Month", "Source", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="update_column")
     old_value = st.sidebar.text_input("Old value")
     new_value = st.sidebar.text_input("New value")
 
@@ -136,8 +123,17 @@ def main():
 
     # Delete operations
     st.sidebar.header("Delete Operations: 'DELETE FROM {table} WHERE {column} = ?'")
-    table_to_delete = st.sidebar.selectbox("Choose a table to delete from", ["flipkart", "amazon", "both"], key="delete_table")
-    column_to_delete = st.sidebar.selectbox("Choose a column to delete from", [col for col in fdf.columns if col not in ['Month', 'Source']], key="delete_column")
+    table_to_delete = st.sidebar.selectbox("Choose a table to delete from", ["flipkart", "amazon"], key="delete_table")
+    column_to_delete = st.sidebar.selectbox("Choose a column to delete from", [
+        "Month", "Source", "Gross Transactions (Mn)", "Shipped Transactions (Mn)", "Checkout GMV (USD Mn)", "Shipped GMV (USD Mn)", 
+        "Fulfilled GMV i.e. GMV post Return (USD Mn)", "Average Order Value per transaction (USD)", "ASP per item (USD)", 
+        "Mobiles (USD Mn)", "Electronic Devices (USD Mn)", "Large & Small Appliances (USD Mn)", "% COD", "% Prepaid", 
+        "Orders shipped per day Lacs", "% Returns(RTO+RVP)", "% share of Captive", "% share of 3PL", "% Metro", "% Tier-I", 
+        "% Others", "Revenue from Operations (Take Rate + Delivery Charges ) (USD Mn)", "Other Revenue (USD Mn)", 
+        "Total Revenue (USD Mn)", "Supply Chain Costs (Fixed and Variable Included) (USD Mn)", 
+        "Payment Gateway Costs (Only on the Pre-paid orders) (USD Mn)", "Marketing Expediture (USD Mn)", 
+        "Contribution Margin (as % of Fulfilled GMV)", "Tech & Admin/Employee Costs and other costs (USD Mn)", "Cash Burn (USD Mn)"
+    ], key="delete_column")
     value_to_delete = st.sidebar.text_input("Value to delete")
 
     if st.sidebar.button("Click here to delete"):
@@ -145,19 +141,23 @@ def main():
         st.sidebar.text("Data deleted successfully")
         result = view_data(table_to_delete)
         st.write(result)
-
     # Aggregation operations
     st.sidebar.header("Aggregation Operations")
     table_to_aggregate = st.sidebar.selectbox("Choose a table to aggregate", ["flipkart", "amazon", "both"], key="aggregate_table")
-    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", [col for col in fdf.columns if col not in ['Month', 'Source']])
+    columns_to_aggregate = st.sidebar.multiselect("Choose columns to aggregate", fdf.columns)
     aggregation_method = st.sidebar.selectbox("Choose an aggregation method", ["SUM", "AVG", "COUNT"])
 
     if st.sidebar.button("Aggregate"):
-        result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
+        if table_to_aggregate == 'both':
+            result_flipkart = aggregate_data('flipkart', columns_to_aggregate, aggregation_method)
+            result_amazon = aggregate_data('amazon', columns_to_aggregate, aggregation_method)
+            result = pd.concat([result_flipkart, result_amazon])
+        else:
+            result = aggregate_data(table_to_aggregate, columns_to_aggregate, aggregation_method)
         st.header(f"Aggregation Results for {table_to_aggregate}:")
         st.write(result)
 
     conn.close()
-
+    
 if __name__ == '__main__':
     main()
